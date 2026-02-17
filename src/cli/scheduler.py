@@ -15,12 +15,12 @@ from dotenv import load_dotenv
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from src.storage import get_session, init_db
+from src.internal_db import get_session, init_db
 from src.google import GoogleContactsClient, GoogleContactsSync
 from src.icloud import ICloudCardDAVClient, ICloudContactsSync
 from src.normalize import ContactNormalizer
 from src.merge import ContactMerger
-from src.db_writer import ContactsDatabaseWriter
+from src.pbx_db import ContactsDatabaseWriter
 
 logging.basicConfig(
     level=os.getenv('LOG_LEVEL', 'INFO'),

@@ -13,7 +13,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 
 from .client import GoogleContactsClient, SyncTokenExpiredError, RateLimitError
-from ..storage.schema import SourceContact, SyncState
+from ..internal_db.schema import SourceContact, SyncState
 
 logger = logging.getLogger(__name__)
 
