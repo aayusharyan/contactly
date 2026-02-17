@@ -98,8 +98,11 @@ jobs:
           echo "New version: $NEW_VERSION"
 
           # Export variables for use in subsequent steps
+          # Git tags keep 'v' prefix (v1.2.3) but Docker tags don't (1.2.3, 1.2, 1)
           echo "new_version=${NEW_VERSION}" >> $GITHUB_OUTPUT
           echo "version_number=${MAJOR}.${MINOR}.${PATCH}" >> $GITHUB_OUTPUT
+          echo "major_minor=${MAJOR}.${MINOR}" >> $GITHUB_OUTPUT
+          echo "major=${MAJOR}" >> $GITHUB_OUTPUT
 
       # Update version strings in the codebase to match the new release version
       # Updates both Python package version and Docker image label
@@ -157,10 +160,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Generate Docker image tags and OCI-compliant labels
-      # Creates three tags for flexibility:
+      # Creates multiple tags following Docker Hub conventions (no 'v' prefix):
       # - latest: Always points to newest stable release
-      # - vX.Y.Z: Version with 'v' prefix (matches Git tag format)
-      # - X.Y.Z: Version without prefix (cleaner for some use cases)
+      # - 1.2.3: Full semantic version (immutable)
+      # - 1.2: Rolling tag for latest patch of minor version
+      # - 1: Rolling tag for latest minor of major version
+      # Git tags keep 'v' prefix (v1.2.3) but Docker tags don't
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -168,8 +173,9 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ steps.version.outputs.new_version }}
             type=raw,value=${{ steps.version.outputs.version_number }}
+            type=raw,value=${{ steps.version.outputs.major_minor }}
+            type=raw,value=${{ steps.version.outputs.major }}
 
       # Build Docker image and push to GitHub Container Registry
       # Uses GitHub Actions cache to speed up repeated builds by reusing layers
@@ -216,8 +222,12 @@ jobs:
           # Stable latest
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-          # Specific version
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_version }}
+          # Specific version (immutable)
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_number }}
+
+          # Rolling tags (auto-update to latest patch/minor)
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.major_minor }}
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.major }}
           \`\`\`
 
           **Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.version.outputs.new_version }}
@@ -249,8 +259,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Docker Images:**" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest\` (stable)" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_number }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_number }}\` (immutable)" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.major_minor }}\` (rolling)" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.major }}\` (rolling)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Pull command:**" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
