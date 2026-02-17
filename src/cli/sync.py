@@ -17,7 +17,7 @@ from src.google import GoogleContactsClient, GoogleContactsSync
 from src.icloud import ICloudCardDAVClient, ICloudContactsSync
 from src.normalize import ContactNormalizer
 from src.merge import ContactMerger
-from src.pbx_db import ContactsDatabaseWriter
+from src.pbx_db import ContactsDatabaseWriter, init_pbx_db
 
 logging.basicConfig(
     level=logging.INFO,
@@ -66,6 +66,7 @@ def run_sync():
     logger.info("=" * 60)
 
     init_db()
+    init_pbx_db(config['external_db_url'])
 
     config = load_config()
 

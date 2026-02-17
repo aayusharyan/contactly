@@ -20,7 +20,7 @@ from src.google import GoogleContactsClient, GoogleContactsSync
 from src.icloud import ICloudCardDAVClient, ICloudContactsSync
 from src.normalize import ContactNormalizer
 from src.merge import ContactMerger
-from src.pbx_db import ContactsDatabaseWriter
+from src.pbx_db import ContactsDatabaseWriter, init_pbx_db
 
 logging.basicConfig(
     level=os.getenv('LOG_LEVEL', 'INFO'),
@@ -131,6 +131,7 @@ def main():
     init_db()
 
     config = load_config()
+    init_pbx_db(config['external_db_url'])
     sync_interval = config['sync_interval_hours']
 
     logger.info(f"Sync interval: {sync_interval} hours")
