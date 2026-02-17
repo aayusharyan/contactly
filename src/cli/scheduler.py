@@ -1,5 +1,5 @@
 """
-Scheduled sync service using APScheduler.
+Contactly - Scheduled Sync Service
 
 Runs contact synchronization on a recurring schedule (default: every 6 hours) using
 APScheduler blocking scheduler. Implements exponential backoff on repeated failures to
@@ -38,8 +38,7 @@ def load_config():
     Load configuration from environment variables.
     Supports both new and legacy variable names for backward compatibility.
     """
-    config_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'config')
-    env_file = os.path.join(config_dir, '.env')
+    env_file = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
     load_dotenv(env_file)
 
     return {
@@ -124,7 +123,7 @@ def main():
     Blocks until Ctrl+C or system signal received.
     """
     logger.info("=" * 60)
-    logger.info("Contacts Sync Scheduler Starting")
+    logger.info("Contactly - Scheduled Sync Service")
     logger.info("=" * 60)
 
     init_db()

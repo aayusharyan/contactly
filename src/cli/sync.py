@@ -1,5 +1,5 @@
 """
-Manual sync script for one-time or on-demand contact synchronization.
+Contactly - Manual Sync Script
 
 Runs complete sync cycle: Google fetch, iCloud fetch, merge, publish to external DB.
 Useful for testing, manual refreshes, or running as cron job instead of daemon.
@@ -31,8 +31,7 @@ def load_config():
     Load configuration from environment variables.
     Supports both new variable names and legacy PBX_* variables for backward compatibility.
     """
-    config_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'config')
-    env_file = os.path.join(config_dir, '.env')
+    env_file = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
     load_dotenv(env_file)
 
     return {
@@ -62,7 +61,7 @@ def run_sync():
     MySQL, (5) verify write succeeded. Each phase logs progress and errors independently.
     """
     logger.info("=" * 60)
-    logger.info("Starting contacts synchronization")
+    logger.info("Contactly - Contact Synchronization")
     logger.info("=" * 60)
 
     init_db()

@@ -1,5 +1,5 @@
 """
-iCloud contacts synchronization coordinator.
+Contactly - iCloud Contacts Synchronization
 
 Orchestrates the complete sync workflow: fetch contact list with ETags, compare with
 local database, download only changed contacts, parse vCards, and store normalized data.

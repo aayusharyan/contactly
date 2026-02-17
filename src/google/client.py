@@ -1,5 +1,5 @@
 """
-Google People API client for contact synchronization.
+Contactly - Google People API Client
 
 Handles OAuth 2.0 authentication using environment variables, automatic token
 refresh, and API requests to Google People API v1. Implements sync cursor support

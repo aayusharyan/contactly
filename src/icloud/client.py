@@ -1,5 +1,5 @@
 """
-iCloud CardDAV client for contact discovery and synchronization.
+Contactly - iCloud CardDAV Client
 
 Implements the CardDAV protocol (RFC 6352) to communicate with Apple's iCloud
 contacts service. Handles server discovery, contact enumeration with ETags for

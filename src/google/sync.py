@@ -1,5 +1,5 @@
 """
-Google contacts synchronization coordinator.
+Contactly - Google Contacts Synchronization
 
 Orchestrates the complete sync workflow: fetch contacts from Google People API using
 sync cursors for incremental updates, process contact data including deletions, and
