@@ -7,5 +7,5 @@ ETag/sync-token tracking, contact merging with conflict resolution, and maintain
 a canonical contact database for unified caller ID lookups.
 """
 
-__version__ = '1.0.0'
+__version__ = '0.1.0'
 __author__ = 'contactly'
