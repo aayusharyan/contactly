@@ -19,7 +19,7 @@ class PbxCnam(Base):
     Stores phone number to display name mappings that Asterisk/FreePBX query during
     call processing. Minimal schema by design - only fields needed for caller-id lookup.
     Primary key on e164 enables fast lookups: "SELECT display_name FROM pbx_cnam WHERE
-    e164 = '+14155551234'". Updated via ContactsDatabaseWriter after canonical merge.
+    e164 = '+14155551234'". Updated via sync_to_pbx() function after canonical merge.
     """
 
     __tablename__ = 'pbx_cnam'
