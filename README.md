@@ -1,6 +1,12 @@
+<div align="center">
+
+![Contactly Header](.github/header.png)
+
 # Contactly
 
 **Syncs Google and iCloud contacts with PBX database for caller ID name lookup**
+
+</div>
 
 ## What It Does
 
