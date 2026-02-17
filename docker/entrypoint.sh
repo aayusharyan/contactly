@@ -34,7 +34,7 @@ else
         echo "  - GOOGLE_REFRESH_TOKEN"
         echo ""
         echo "To generate these values, follow the setup guide:"
-        echo "  https://github.com/aayusharyan/contactly/blob/main/GOOGLE_OAUTH_SETUP.md"
+        echo "  https://github.com/aayusharyan/contactly/blob/main/GOOGLE_AUTH_SETUP.md"
         echo ""
         echo "Quick summary:"
         echo "  1. Create OAuth credentials in Google Cloud Console"
@@ -64,6 +64,9 @@ else
         echo "Both environment variables are required:"
         echo "  - ICLOUD_USERNAME"
         echo "  - ICLOUD_APP_PASSWORD"
+        echo ""
+        echo "To generate an app-specific password, follow the guide:"
+        echo "  https://github.com/aayusharyan/contactly/blob/main/ICLOUD_AUTH_SETUP.md"
         echo ""
         exit 1
     else
