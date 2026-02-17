@@ -1,5 +1,5 @@
 """
-Contact data normalization utilities.
+Contactly - Contact Data Normalization
 
 Provides E.164 phone number conversion using Google's libphonenumber library and
 contact field standardization. Handles phone numbers in various formats (local, international,

@@ -1,5 +1,5 @@
 """
-Contact merging and collision resolution logic.
+Contactly - Contact Merging and Collision Resolution
 
 Combines contacts from multiple sources (Google, iCloud) into canonical records using
 latest-wins conflict resolution. When the same person exists in both Google and iCloud,

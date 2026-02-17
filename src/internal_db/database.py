@@ -1,5 +1,5 @@
 """
-Database session management and initialization.
+Contactly - Database Session Management
 
 Provides context managers and factory functions for SQLAlchemy database sessions.
 Handles connection pooling, transaction management, and automatic rollback on errors.
@@ -20,8 +20,8 @@ from .schema import Base
 
 logger = logging.getLogger(__name__)
 
-# Load environment variables from config/.env
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', 'config', '.env'))
+# Load environment variables from .env in project root
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 LOCAL_DB_PATH = os.getenv('LOCAL_DB_PATH', 'sqlite:///contacts_sync.db')
 

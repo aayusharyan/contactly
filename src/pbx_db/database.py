@@ -1,5 +1,5 @@
 """
-PBX database initialization and migration management.
+Contactly - PBX Database Management
 
 Handles setup and schema evolution for external MySQL database that PBX systems
 query for caller-id name lookups. Executes SQL migrations from migrations/pbx_db/
@@ -23,7 +23,8 @@ from .schema import Base, PbxCnam
 
 logger = logging.getLogger(__name__)
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', 'config', '.env'))
+# Load environment variables from .env in project root
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 
 def get_pbx_db_url() -> str:
