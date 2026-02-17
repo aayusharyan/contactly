@@ -1,43 +1,39 @@
-# Git ignore file specifying which files and directories should be excluded
-# from version control. This keeps the repository clean by preventing
-# sensitive data, build artifacts, and environment-specific files from being committed.
+# Contactly - Git Ignore Configuration
+#
+# Specifies files and directories that should not be tracked by Git.
+# Keeps the repository clean by preventing sensitive data, build artifacts,
+# and environment-specific files from being committed.
+#
+# Standard FOSS practice: Never commit credentials, local configs, or generated files
 
-# Python bytecode, compiled extensions, and cache directories
-# These are automatically generated and should not be version controlled
-*.pyc
+# Python cache and compiled files
+# These are automatically regenerated and platform-specific
 __pycache__/
+*.pyc
 *.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-*.log
 
-# Environment configuration and OAuth credentials
-# Sensitive information that should never be committed to the repository
+# Environment configuration (for developers)
+# Contains sensitive credentials and local settings
 .env
+
+# OAuth credentials (NEVER commit these!)
+# These files contain sensitive authentication tokens
 credentials.json
 token.json
-token.pickle
 
-# Local database files containing runtime data
-# Database instances should be managed locally and not shared via git
+# Local SQLite database
+# Runtime data that shouldn't be shared
 contacts_sync.db
-*.sqlite
-*.db
 
-# IDE and text editor configuration files and swap files
-# Editor settings are user-specific and should not be shared
+# IDE settings
+# User-specific editor configurations
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
 
-# Operating system generated files and metadata
-# These vary by OS and should not be version controlled
+# OS files
+# macOS metadata files
 .DS_Store
-Thumbs.db
+
+# User's docker-compose with real credentials
+# The example file is tracked, but users' actual configs with real credentials are not
+docker-compose.yml

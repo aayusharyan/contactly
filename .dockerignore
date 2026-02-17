@@ -1,74 +1,60 @@
 # Contactly - Docker Ignore Configuration
-# Docker ignore file for controlling which files and directories are excluded
-# from the Docker build context. This reduces image size and build time by
-# preventing unnecessary files from being sent to the Docker daemon.
+#
+# Controls which files are excluded from the Docker build context.
+# Reduces image size and build time by preventing unnecessary files
+# from being sent to the Docker daemon.
+#
+# Standard FOSS practice: Exclude version control, local configs, and non-production files
 
-# Exclude version control system metadata and configuration
-# Git repositories should not be included in Docker images
+# Version control
+# Git repository should not be included in Docker images
 .git/
 .gitignore
 
-# Exclude Python bytecode and cache files that are regenerated automatically
-# These files are platform-specific and should be created fresh in the container
+# Python cache
+# These are regenerated in the container and should be created fresh
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
 
-# Exclude local Python virtual environment directories
-# Container should use its own isolated Python environment
-venv/
-env/
-ENV/
+# Local environment (not needed in container)
+# Credentials should be mounted at runtime or passed as env vars
+.env
 
-# Exclude IDE and editor configuration directories and swap files
-# Development tool settings should not be copied into production images
-.vscode/
-.idea/
-*.swp
-*.swo
+# OAuth credentials (mount at runtime)
+# These should be provided via volumes or environment variables, not baked into the image
+credentials.json
+token.json
 
-# Exclude log files as they should be written to volumes or stdout
-*.log
-
-# Exclude database files as they should be managed using Docker volumes
-# This ensures data persistence and proper separation from the container
+# Local database files (use volumes)
+# Data persistence should use Docker volumes, not be baked into the image
 *.db
 *.sqlite
 
-# Exclude OAuth credentials and authentication tokens
-# Security-sensitive files should be mounted at runtime as volumes
-credentials.json
-token.json
-token.pickle
-generate_google_token.py
+# IDE settings
+# Development tool configurations don't belong in production images
+.vscode/
+.idea/
 
-# Exclude environment configuration files
-# Environment variables should be provided at container runtime
-.env
-
-# Exclude documentation markdown files except README
-# Most documentation is not needed inside the container
+# Documentation (most not needed in container)
+# Keep only README for reference, exclude other docs to reduce image size
 *.md
 !README.md
 
-# Exclude test directories and files as they are not needed in production
-tests/
-test_*.py
-
-# Exclude temporary files and OS-specific metadata files
-*.tmp
-*~
+# OS files
+# Platform-specific metadata files
 .DS_Store
-Thumbs.db
 
-# Exclude Docker build and orchestration files
+# Docker files (not needed inside image)
 # These are used to build the image, not needed inside it
 docker-compose.yml
-build_docker.sh
+docker-compose.example.yml
+.dockerignore
+
+# GitHub workflows
+# CI/CD configurations don't belong in the image
+.github/
+
+# Cursor AI settings
+# Editor-specific configurations
+.cursor/
