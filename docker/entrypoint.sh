@@ -15,11 +15,12 @@ echo "========================================================================"
 
 mkdir -p /app/data
 
-# Verify that all three Google OAuth credentials are provided together.
-# If only some are set, display an error with instructions.
-# If none are set, log an informational message that Google sync will be skipped.
+# Check if Google OAuth credentials are fully configured.
+# All three variables must be present for Google sync to work.
+GOOGLE_CONFIGURED=false
 if [ -n "$GOOGLE_CLIENT_ID" ] && [ -n "$GOOGLE_CLIENT_SECRET" ] && [ -n "$GOOGLE_REFRESH_TOKEN" ]; then
-    echo "✓ Google OAuth credentials configured via environment variables"
+    GOOGLE_CONFIGURED=true
+    echo "✓ Google OAuth credentials configured"
 else
     if [ -n "$GOOGLE_CLIENT_ID" ] || [ -n "$GOOGLE_CLIENT_SECRET" ] || [ -n "$GOOGLE_REFRESH_TOKEN" ]; then
         echo ""
@@ -41,25 +42,55 @@ else
         echo "  3. Set these three values in your environment variables"
         echo "  4. Restart the container"
         echo ""
-        echo "The service will continue running but Google sync will fail."
-        echo "========================================================================"
-        echo ""
+        exit 1
     else
         echo "INFO: Google OAuth not configured - Google contacts sync will be skipped"
     fi
 fi
 
-# Build a list of missing required environment variables for iCloud and PBX.
-# Exit with error if any required variables are missing.
+# Check if iCloud credentials are fully configured.
+# Both username and app password must be present for iCloud sync to work.
+ICLOUD_CONFIGURED=false
+if [ -n "$ICLOUD_USERNAME" ] && [ -n "$ICLOUD_APP_PASSWORD" ]; then
+    ICLOUD_CONFIGURED=true
+    echo "✓ iCloud credentials configured"
+else
+    if [ -n "$ICLOUD_USERNAME" ] || [ -n "$ICLOUD_APP_PASSWORD" ]; then
+        echo ""
+        echo "========================================================================"
+        echo "ERROR: Incomplete iCloud configuration!"
+        echo "========================================================================"
+        echo ""
+        echo "Both environment variables are required:"
+        echo "  - ICLOUD_USERNAME"
+        echo "  - ICLOUD_APP_PASSWORD"
+        echo ""
+        exit 1
+    else
+        echo "INFO: iCloud not configured - iCloud contacts sync will be skipped"
+    fi
+fi
+
+# Validate that at least one contact source (Google or iCloud) is configured.
+# The service requires at least one upstream to sync contacts from.
+if [ "$GOOGLE_CONFIGURED" = false ] && [ "$ICLOUD_CONFIGURED" = false ]; then
+    echo ""
+    echo "========================================================================"
+    echo "ERROR: No contact sources configured!"
+    echo "========================================================================"
+    echo ""
+    echo "At least one contact source must be configured:"
+    echo "  - Google OAuth (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN)"
+    echo "  - iCloud (ICLOUD_USERNAME, ICLOUD_APP_PASSWORD)"
+    echo ""
+    echo "Ideally, configure both sources for complete contact synchronization."
+    echo ""
+    exit 1
+fi
+
+# Validate PBX database credentials are present.
+# The PBX database is required as it's the destination for synced contacts.
 MISSING_VARS=""
-
-if [ -z "$ICLOUD_USERNAME" ]; then
-    MISSING_VARS="${MISSING_VARS}ICLOUD_USERNAME "
-fi
-
-if [ -z "$ICLOUD_APP_PASSWORD" ]; then
-    MISSING_VARS="${MISSING_VARS}ICLOUD_APP_PASSWORD "
-fi
 
 if [ -z "$PBX_DB_HOST" ]; then
     MISSING_VARS="${MISSING_VARS}PBX_DB_HOST "
@@ -70,12 +101,17 @@ if [ -z "$PBX_DB_PASSWORD" ]; then
 fi
 
 if [ -n "$MISSING_VARS" ]; then
-    echo "ERROR: Missing required environment variables: $MISSING_VARS"
+    echo ""
+    echo "========================================================================"
+    echo "ERROR: Missing required PBX database variables!"
+    echo "========================================================================"
+    echo ""
+    echo "Missing variables: $MISSING_VARS"
     echo ""
     echo "Set these variables when running the container:"
     echo ""
     echo "Option 1 - Using docker run with -e flags:"
-    echo "  docker run -e ICLOUD_USERNAME=your@icloud.com -e ICLOUD_APP_PASSWORD=xxxx ..."
+    echo "  docker run -e PBX_DB_HOST=mysql.example.com -e PBX_DB_PASSWORD=xxxx ..."
     echo ""
     echo "Option 2 - Using docker run with --env-file:"
     echo "  docker run --env-file /path/to/your/.env contactly:latest"
@@ -91,11 +127,12 @@ fi
 # Shows which services are configured and operational parameters.
 echo ""
 echo "Configuration:"
-echo "  iCloud User: $ICLOUD_USERNAME"
+echo "  Contact Sources:"
+echo "    - Google: $([ "$GOOGLE_CONFIGURED" = true ] && echo '✓ Configured' || echo '✗ Not configured')"
+echo "    - iCloud: $([ "$ICLOUD_CONFIGURED" = true ] && echo "✓ Configured ($ICLOUD_USERNAME)" || echo '✗ Not configured')"
 echo "  PBX MySQL: $PBX_DB_USER@$PBX_DB_HOST:$PBX_DB_PORT/$PBX_DB_NAME"
 echo "  Sync Interval: ${SYNC_INTERVAL_HOURS:-6} hours"
 echo "  Log Level: ${LOG_LEVEL:-INFO}"
-echo "  Google OAuth: $([ -n "$GOOGLE_REFRESH_TOKEN" ] && echo '✓ Configured' || echo '✗ Not configured')"
 echo ""
 echo "========================================================================"
 echo "Starting sync scheduler..."
