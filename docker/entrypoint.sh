@@ -114,7 +114,7 @@ if [ -n "$MISSING_VARS" ]; then
     echo "  docker run -e PBX_DB_HOST=mysql.example.com -e PBX_DB_PASSWORD=xxxx ..."
     echo ""
     echo "Option 2 - Using docker run with --env-file:"
-    echo "  docker run --env-file /path/to/your/.env contactly:latest"
+    echo "  docker run --env-file /path/to/your/.env ghcr.io/aayusharyan/contactly:latest"
     echo ""
     echo "Option 3 - Using docker-compose.yml:"
     echo "  Create a docker-compose.yml with environment variables and run:"
