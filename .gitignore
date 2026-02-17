@@ -1,0 +1,43 @@
+# Git ignore file specifying which files and directories should be excluded
+# from version control. This keeps the repository clean by preventing
+# sensitive data, build artifacts, and environment-specific files from being committed.
+
+# Python bytecode, compiled extensions, and cache directories
+# These are automatically generated and should not be version controlled
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Environment configuration and OAuth credentials
+# Sensitive information that should never be committed to the repository
+.env
+credentials.json
+token.json
+token.pickle
+
+# Local database files containing runtime data
+# Database instances should be managed locally and not shared via git
+contacts_sync.db
+*.sqlite
+*.db
+
+# IDE and text editor configuration files and swap files
+# Editor settings are user-specific and should not be shared
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating system generated files and metadata
+# These vary by OS and should not be version controlled
+.DS_Store
+Thumbs.db

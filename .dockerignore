@@ -1,0 +1,75 @@
+# Docker ignore file for controlling which files and directories are excluded
+# from the Docker build context. This reduces image size and build time by
+# preventing unnecessary files from being sent to the Docker daemon.
+
+# Exclude version control system metadata and configuration
+# Git repositories should not be included in Docker images
+.git/
+.gitignore
+
+# Exclude Python bytecode and cache files that are regenerated automatically
+# These files are platform-specific and should be created fresh in the container
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Exclude local Python virtual environment directories
+# Container should use its own isolated Python environment
+venv/
+env/
+ENV/
+
+# Exclude IDE and editor configuration directories and swap files
+# Development tool settings should not be copied into production images
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Exclude log files as they should be written to volumes or stdout
+*.log
+
+# Exclude database files as they should be managed using Docker volumes
+# This ensures data persistence and proper separation from the container
+*.db
+*.sqlite
+
+# Exclude OAuth credentials and authentication tokens
+# Security-sensitive files should be mounted at runtime as volumes
+credentials.json
+token.json
+token.pickle
+generate_google_token.py
+
+# Exclude environment configuration files
+# Environment variables should be provided at container runtime
+config/.env
+.env
+
+# Exclude documentation markdown files except README
+# Most documentation is not needed inside the container
+*.md
+!README.md
+
+# Exclude test directories and files as they are not needed in production
+tests/
+test_*.py
+
+# Exclude temporary files and OS-specific metadata files
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# Exclude Docker build and orchestration files
+# These are used to build the image, not needed inside it
+docker-compose.yml
+docker/.env.example
+build_docker.sh
