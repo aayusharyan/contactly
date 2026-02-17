@@ -1,22 +1,21 @@
 """
 Google People API client for contact synchronization.
 
-Handles OAuth 2.0 authentication flow, token management (refresh, storage), and
-API requests to Google People API v1. Implements sync cursor support for efficient
-incremental updates that only fetch contacts changed since last sync. Manages
-pagination automatically for large contact lists.
+Handles OAuth 2.0 authentication using environment variables, automatic token
+refresh, and API requests to Google People API v1. Implements sync cursor support
+for efficient incremental updates that only fetch contacts changed since last sync.
+Manages pagination automatically for large contact lists.
 """
 
 import os
-import pickle
+import json
 from typing import Optional, List, Dict, Any
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# Read-only access to contacts - follows principle of least privilege
+# Read-only access to contacts
 SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
 
 
@@ -24,57 +23,49 @@ class GoogleContactsClient:
     """
     Client for interacting with Google People API.
 
-    Manages complete OAuth 2.0 lifecycle including initial authorization, token storage,
-    and automatic refresh. Provides methods for fetching contacts with pagination and
-    incremental sync support via sync cursors (valid for 7 days). Note: "cursor" here
-    refers to a sync checkpoint/bookmark, not an authentication token.
+    Manages OAuth 2.0 authentication using environment variables with automatic token
+    refresh. Provides methods for fetching contacts with pagination and incremental
+    sync support via sync cursors (valid for 7 days). Note: "cursor" here refers to
+    a sync checkpoint/bookmark, not an authentication token.
     """
 
-    def __init__(self, credentials_path: str, token_path: str):
+    def __init__(self, client_id: str, client_secret: str, refresh_token: str):
         """
-        Initialize the Google Contacts client.
+        Initialize the Google Contacts client using OAuth credentials.
 
-        Creates OAuth credentials from client secrets file and stored token.
-        If token doesn't exist or is invalid, initiates interactive OAuth flow.
+        Credentials are provided via environment variables. Token refresh happens
+        automatically when the access token expires.
 
         Args:
-            credentials_path: Path to OAuth credentials JSON file
-            token_path: Path to store/load OAuth token
+            client_id: Google OAuth client ID
+            client_secret: Google OAuth client secret
+            refresh_token: Google OAuth refresh token
         """
-        self.credentials_path = credentials_path
-        self.token_path = token_path
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.refresh_token = refresh_token
         self.service = None
         self._authenticate()
 
     def _authenticate(self):
         """
-        Authenticate with Google OAuth and build the service client.
+        Authenticate with Google OAuth using credentials from environment variables.
 
-        Handles three scenarios: load existing valid token, refresh expired token,
-        or run interactive authorization flow for new user. Tokens are persisted to
-        disk to avoid repeated authorization prompts.
+        Builds credentials object from client ID, client secret, and refresh token.
+        Token refresh happens automatically when the token expires.
         """
-        creds = None
+        # Build credentials from environment variables
+        creds = Credentials(
+            token=None,  # Will be automatically obtained via refresh
+            refresh_token=self.refresh_token,
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            scopes=SCOPES
+        )
 
-        # Try to load existing token
-        if os.path.exists(self.token_path):
-            with open(self.token_path, 'rb') as token:
-                creds = pickle.load(token)
-
-        # Refresh expired token or run new authorization flow
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                # Interactive OAuth flow - opens browser or provides URL
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    self.credentials_path, SCOPES
-                )
-                creds = flow.run_local_server(port=0)
-
-            # Persist token for future use
-            with open(self.token_path, 'wb') as token:
-                pickle.dump(creds, token)
+        # Get fresh access token using refresh token
+        creds.refresh(Request())
 
         self.service = build('people', 'v1', credentials=creds)
 
