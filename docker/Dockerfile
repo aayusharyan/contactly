@@ -5,7 +5,7 @@
 
 FROM python:3.11-slim
 
-LABEL maintainer="Aayush Sinha <aayusharyan>"
+LABEL maintainer="Aayush Sinha <hello@yush.dev>"
 LABEL description="Contactly - Syncs Google and iCloud contacts with PBX database for caller ID name lookup"
 LABEL version="1.0.0"
 
