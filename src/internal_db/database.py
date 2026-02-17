@@ -52,39 +52,44 @@ def get_session() -> Session:
 
 def init_db():
     """
-    Initialize database by running all SQL migrations.
+    Initialize internal database by running all SQL migrations.
 
-    Executes all .sql files from migrations/ directory in sorted order.
+    Executes all .sql files from migrations/internal_db/ directory in sorted order.
     Migrations are idempotent (use IF NOT EXISTS, etc.) so safe to run repeatedly.
+    Creates canonical_contact, source_contact, and sync_state tables with indexes.
     """
-    logger.info("Initializing database...")
+    logger.info("Initializing internal database...")
 
-    migrations_dir = Path(__file__).parent.parent.parent / 'migrations'
+    migrations_dir = Path(__file__).parent.parent.parent / 'migrations' / 'internal_db'
 
     if not migrations_dir.exists():
-        logger.info("No migrations directory found, skipping migrations")
+        logger.info("No internal_db migrations directory found, skipping migrations")
         return
 
     migration_files = sorted(migrations_dir.glob('*.sql'))
 
     if not migration_files:
-        logger.info("No migration files found")
+        logger.info("No internal_db migration files found")
         return
 
     for migration_file in migration_files:
-        logger.info(f"Running migration: {migration_file.name}")
+        logger.info(f"Running internal_db migration: {migration_file.name}")
         _execute_sql_file(migration_file)
-        logger.info(f"✓ Migration completed: {migration_file.name}")
+        logger.info(f"✓ Internal_db migration completed: {migration_file.name}")
 
-    logger.info("Database initialization complete")
+    logger.info("Internal database initialization complete")
 
 
 def _execute_sql_file(sql_file_path: Path):
     """
-    Execute SQL statements from a file.
+    Execute SQL statements from a file against SQLite database.
 
     Reads SQL file and executes all statements. Migrations should be idempotent
-    using IF NOT EXISTS, IF EXISTS, etc. for safe re-execution.
+    using IF NOT EXISTS, IF EXISTS, etc. for safe re-execution. Splits on semicolons
+    to handle multiple statements per file.
+
+    Args:
+        sql_file_path: Path to SQL file to execute
     """
     db_path = LOCAL_DB_PATH.replace('sqlite:///', '')
     conn = sqlite3.connect(db_path)
