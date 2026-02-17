@@ -1,3 +1,4 @@
+# Contactly - Docker Ignore Configuration
 # Docker ignore file for controlling which files and directories are excluded
 # from the Docker build context. This reduces image size and build time by
 # preventing unnecessary files from being sent to the Docker daemon.
@@ -50,7 +51,6 @@ generate_google_token.py
 
 # Exclude environment configuration files
 # Environment variables should be provided at container runtime
-config/.env
 .env
 
 # Exclude documentation markdown files except README
@@ -71,5 +71,4 @@ Thumbs.db
 # Exclude Docker build and orchestration files
 # These are used to build the image, not needed inside it
 docker-compose.yml
-docker/.env.example
 build_docker.sh
