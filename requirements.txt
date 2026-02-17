@@ -1,0 +1,19 @@
+# Contactly - Python Dependencies
+# Syncs Google and iCloud contacts with PBX database for caller ID name lookup
+
+google-auth==2.27.0
+google-auth-oauthlib==1.2.0
+google-api-python-client==2.115.0
+
+requests==2.31.0
+lxml==5.1.0
+vobject==0.9.7
+
+SQLAlchemy==2.0.25
+pymysql==1.1.0
+
+phonenumbers==8.13.29
+
+APScheduler==3.10.4
+
+python-dotenv==1.0.1
