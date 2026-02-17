@@ -43,8 +43,9 @@ def load_config():
     load_dotenv(env_file)
 
     return {
-        'google_credentials': os.getenv('GOOGLE_CREDENTIALS_PATH'),
-        'google_token': os.getenv('GOOGLE_TOKEN_PATH'),
+        'google_client_id': os.getenv('GOOGLE_CLIENT_ID'),
+        'google_client_secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+        'google_refresh_token': os.getenv('GOOGLE_REFRESH_TOKEN'),
         'icloud_username': os.getenv('ICLOUD_USERNAME'),
         'icloud_password': os.getenv('ICLOUD_APP_PASSWORD'),
         'icloud_url': os.getenv('ICLOUD_CARDDAV_URL', 'https://contacts.icloud.com'),
@@ -77,8 +78,9 @@ def scheduled_sync_job():
 
         with get_session() as session:
             google_client = GoogleContactsClient(
-                config['google_credentials'],
-                config['google_token']
+                config['google_client_id'],
+                config['google_client_secret'],
+                config['google_refresh_token']
             )
             google_sync = GoogleContactsSync(google_client, session)
             google_stats = google_sync.sync()
