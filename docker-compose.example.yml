@@ -1,0 +1,164 @@
+# Contactly - Docker Compose Configuration Example
+#
+# Copy this file to docker-compose.yml and fill in your credentials.
+# This is the recommended setup for end users deploying the contacts sync service.
+#
+# Quick Start:
+# 1. Copy this file: cp docker-compose.example.yml docker-compose.yml
+# 2. Follow GOOGLE_OAUTH_SETUP.md to get Google credentials
+# 3. Edit docker-compose.yml with your actual credentials
+# 4. Run: docker-compose up -d
+#
+# For detailed setup instructions, see GETTING_STARTED.md
+
+version: '3.8'
+
+services:
+  contacts-sync:
+    # Use the latest stable release from GitHub Container Registry
+    # Alternative tags:
+    #   - ghcr.io/aayusharyan/contactly:nightly (latest development build)
+    #   - ghcr.io/aayusharyan/contactly:1.2.3 (specific version)
+    image: ghcr.io/aayusharyan/contactly:latest
+
+    container_name: contactly
+    restart: unless-stopped
+
+    environment:
+      # ============================================================================
+      # iCloud Configuration
+      # ============================================================================
+      # Your Apple ID email address
+      ICLOUD_USERNAME: "your-email@icloud.com"
+
+      # App-specific password (NOT your main iCloud password)
+      # Generate at: https://appleid.apple.com → Security → App-Specific Passwords
+      ICLOUD_APP_PASSWORD: "xxxx-xxxx-xxxx-xxxx"
+
+      # ============================================================================
+      # Google OAuth Configuration
+      # ============================================================================
+      # Follow GOOGLE_OAUTH_SETUP.md to get these three values
+      # You'll use Google OAuth Playground (no Python/scripts needed)
+
+      # From your credentials.json file
+      GOOGLE_CLIENT_ID: "123456789-abcdefghijklmnop.apps.googleusercontent.com"
+      GOOGLE_CLIENT_SECRET: "GOCSPX-your_client_secret_here"
+
+      # From Google OAuth Playground
+      GOOGLE_REFRESH_TOKEN: "1//your_refresh_token_here"
+
+      # ============================================================================
+      # PBX Database Configuration
+      # ============================================================================
+      # Your MySQL/MariaDB database connection details
+      # The service will create/update the pbx_cnam table
+
+      PBX_DB_HOST: "192.168.1.100"           # MySQL server IP or hostname
+      PBX_DB_PORT: "3306"                    # MySQL port (default: 3306)
+      PBX_DB_NAME: "asterisk"                # Database name (usually: asterisk)
+      PBX_DB_USER: "asterisk"                # Database user
+      PBX_DB_PASSWORD: "your_mysql_password" # Database password
+
+      # ============================================================================
+      # Optional Configuration
+      # ============================================================================
+
+      # Phone number region for normalization (ISO 3166-1 alpha-2 country code)
+      # Examples: US, GB, CA, AU, DE, FR, IN
+      DEFAULT_PHONE_REGION: "US"
+
+      # How often to sync contacts (in hours)
+      # Default: 6 hours (recommended for staying within API limits)
+      SYNC_INTERVAL_HOURS: "6"
+
+      # Logging level: DEBUG, INFO, WARNING, ERROR
+      # Use INFO for production, DEBUG for troubleshooting
+      LOG_LEVEL: "INFO"
+
+    volumes:
+      # Persistent storage for sync state and internal database
+      # This volume stores:
+      # - SQLite database with sync cursors and canonical contacts
+      # - Sync state to enable incremental updates
+      # DO NOT delete this volume unless you want to start fresh
+      - contactly-data:/app/data
+
+    # Optional: Resource limits to prevent container from consuming too much
+    # Uncomment and adjust based on your contact count and system resources
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.5'       # Max 50% of one CPU core
+    #       memory: 512M       # Max 512MB RAM
+    #     reservations:
+    #       cpus: '0.25'      # Guaranteed 25% of one CPU core
+    #       memory: 256M       # Guaranteed 256MB RAM
+
+    # Optional: Health check to monitor container status
+    # Uncomment to enable automatic health monitoring
+    # healthcheck:
+    #   test: ["CMD", "python", "-c", "import sqlite3; sqlite3.connect('/app/data/contacts_sync.db').execute('SELECT 1')"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
+
+# Volumes definition
+volumes:
+  contactly-data:
+    driver: local
+    # Optional: Specify a custom mount point on the host
+    # Uncomment to store data in a specific location
+    # driver_opts:
+    #   type: none
+    #   device: /path/on/host/contactly-data
+    #   o: bind
+
+# Optional: Networks configuration
+# Uncomment if you need to connect to other containers or custom networks
+# networks:
+#   default:
+#     name: pbx-network
+#     external: true  # Use existing network
+
+# ============================================================================
+# Security Best Practices
+# ============================================================================
+#
+# 1. Never commit docker-compose.yml with real credentials to version control
+#    Add docker-compose.yml to .gitignore if using this file directly
+#
+# 2. For production, use Docker secrets instead of environment variables:
+#    secrets:
+#      google_refresh_token:
+#        external: true
+#    Then reference: GOOGLE_REFRESH_TOKEN: /run/secrets/google_refresh_token
+#
+# 3. Use a dedicated MySQL user with minimal permissions:
+#    GRANT SELECT, INSERT, UPDATE, DELETE ON asterisk.pbx_cnam TO 'contactly'@'%';
+#
+# 4. Enable MySQL SSL/TLS for remote connections
+#
+# 5. Regularly rotate your iCloud app-specific password and Google refresh token
+#
+# ============================================================================
+# Troubleshooting
+# ============================================================================
+#
+# View logs:
+#   docker-compose logs -f contacts-sync
+#
+# Check container status:
+#   docker-compose ps
+#
+# Restart the service:
+#   docker-compose restart contacts-sync
+#
+# Run a manual sync:
+#   docker-compose exec contacts-sync python -m src.cli.sync
+#
+# Access the internal database:
+#   docker-compose exec contacts-sync sqlite3 /app/data/contacts_sync.db
+#
+# For more help, see GETTING_STARTED.md and GOOGLE_OAUTH_SETUP.md
