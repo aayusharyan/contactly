@@ -172,8 +172,8 @@ class GoogleContactsSync:
         Normalize Google contact data to a simplified JSON structure.
 
         Extracts key fields from Google's complex nested structure into flat format
-        consistent with iCloud normalization. Handles missing fields gracefully since
-        not all contacts have all fields populated.
+        for storage. Handles missing fields gracefully since not all contacts have
+        all fields populated.
         """
         names = connection.get('names', [])
         phones = connection.get('phoneNumbers', [])
