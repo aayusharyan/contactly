@@ -205,24 +205,23 @@ jobs:
           fi
 
           # Build changelog with commits and Docker pull instructions
-          CHANGELOG="## What's Changed
+          cat > RELEASE_NOTES.md <<EOF
+          ## What's Changed
 
-${COMMITS}
+          ${COMMITS}
 
-## Docker Images
+          ## Docker Images
 
-\`\`\`bash
-# Stable latest
-docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          \`\`\`bash
+          # Stable latest
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-# Specific version
-docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_version }}
-\`\`\`
+          # Specific version
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_version }}
+          \`\`\`
 
-**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.version.outputs.new_version }}"
-
-          # Save changelog to file for GitHub release creation
-          echo "$CHANGELOG" > RELEASE_NOTES.md
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.version.outputs.new_version }}
+          EOF
 
       # Create a GitHub release with the generated changelog
       # The release is linked to the Git tag created earlier
