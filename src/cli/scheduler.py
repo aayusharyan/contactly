@@ -20,7 +20,7 @@ from src.google import GoogleContactsClient, GoogleContactsSync
 from src.icloud import ICloudCardDAVClient, ICloudContactsSync
 from src.normalize import ContactNormalizer
 from src.merge import ContactMerger
-from src.pbx_db import ContactsDatabaseWriter, init_pbx_db
+from src.pbx_db import init_pbx_db, sync_to_pbx
 
 logging.basicConfig(
     level=os.getenv('LOG_LEVEL', 'INFO'),
@@ -100,8 +100,7 @@ def scheduled_sync_job():
             merge_stats = merger.merge_all()
             logger.info(f"Merge: {merge_stats}")
 
-            writer = ContactsDatabaseWriter(config['external_db_url'], session)
-            write_stats = writer.write_contacts()
+            write_stats = sync_to_pbx(session, config['external_db_url'])
             logger.info(f"Database write: {write_stats}")
 
         retry_count = 0

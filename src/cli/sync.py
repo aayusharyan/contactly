@@ -17,7 +17,7 @@ from src.google import GoogleContactsClient, GoogleContactsSync
 from src.icloud import ICloudCardDAVClient, ICloudContactsSync
 from src.normalize import ContactNormalizer
 from src.merge import ContactMerger
-from src.pbx_db import ContactsDatabaseWriter, init_pbx_db
+from src.pbx_db import init_pbx_db, sync_to_pbx
 
 logging.basicConfig(
     level=logging.INFO,
@@ -109,8 +109,7 @@ def run_sync():
 
         logger.info("\n[4/5] Writing to external database...")
         try:
-            writer = ContactsDatabaseWriter(config['external_db_url'], session)
-            write_stats = writer.write_contacts()
+            write_stats = sync_to_pbx(session, config['external_db_url'])
             logger.info(f"Database write stats: {write_stats}")
         except Exception as e:
             logger.error(f"Database write failed: {e}", exc_info=True)
