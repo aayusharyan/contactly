@@ -15,7 +15,7 @@ import vobject
 from email.utils import parsedate_to_datetime
 
 from .client import ICloudCardDAVClient
-from ..storage.schema import SourceContact, SyncState
+from ..internal_db.schema import SourceContact, SyncState
 
 logger = logging.getLogger(__name__)
 
