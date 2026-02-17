@@ -13,7 +13,7 @@ from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from ..storage.schema import CanonicalContact, SourceContact
+from ..internal_db.schema import CanonicalContact, SourceContact
 from ..normalize import ContactNormalizer
 
 logger = logging.getLogger(__name__)
