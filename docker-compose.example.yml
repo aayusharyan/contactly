@@ -5,11 +5,12 @@
 #
 # Quick Start:
 # 1. Copy this file: cp docker-compose.example.yml docker-compose.yml
-# 2. Follow GOOGLE_OAUTH_SETUP.md to get Google credentials
-# 3. Edit docker-compose.yml with your actual credentials
-# 4. Run: docker-compose up -d
+# 2. Follow GOOGLE_AUTH_SETUP.md to get Google credentials
+# 3. Follow ICLOUD_AUTH_SETUP.md to get iCloud app-specific password
+# 4. Edit docker-compose.yml with your actual credentials
+# 5. Run: docker-compose up -d
 #
-# For detailed setup instructions, see GETTING_STARTED.md
+# For detailed instructions, see README.md
 
 version: '3.8'
 
@@ -28,17 +29,19 @@ services:
       # ============================================================================
       # iCloud Configuration
       # ============================================================================
+      # Follow ICLOUD_AUTH_SETUP.md to generate an app-specific password
+
       # Your Apple ID email address
       ICLOUD_USERNAME: "your-email@icloud.com"
 
       # App-specific password (NOT your main iCloud password)
-      # Generate at: https://appleid.apple.com → Security → App-Specific Passwords
+      # Follow ICLOUD_AUTH_SETUP.md for step-by-step guide
       ICLOUD_APP_PASSWORD: "xxxx-xxxx-xxxx-xxxx"
 
       # ============================================================================
       # Google OAuth Configuration
       # ============================================================================
-      # Follow GOOGLE_OAUTH_SETUP.md to get these three values
+      # Follow GOOGLE_AUTH_SETUP.md to get these three values
       # You'll use Google OAuth Playground (no Python/scripts needed)
 
       # From your credentials.json file
@@ -161,4 +164,7 @@ volumes:
 # Access the internal database:
 #   docker-compose exec contacts-sync sqlite3 /app/data/contacts_sync.db
 #
-# For more help, see GETTING_STARTED.md and GOOGLE_OAUTH_SETUP.md
+# For more help, see:
+#   - README.md - Quick start guide
+#   - GOOGLE_AUTH_SETUP.md - Google OAuth setup
+#   - ICLOUD_AUTH_SETUP.md - iCloud app-specific password
